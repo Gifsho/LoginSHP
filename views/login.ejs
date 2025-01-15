@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Virtual Keyboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <form id="login-form">
+            <h2>LOGINSHP</h2>
+
+            <p id="errorMessage" style="color: red; font-size: 13px;"></p>
+            <input type="text" id="u___n___" name="u___n___" placeholder="Username">
+            <input type="password" id="p___w___" name="p___w___" placeholder="Password">
+
+            <button id="login-button">Login</button>
+
+        </form>
+    </div>
+
+    <div class="keyb" id="toggle">
+        <i class="fas fa-keyboard" style="color: black;"></i>
+    </div>
+
+    <div id="keyboard-container"></div>
+
+    <!-- <script type="module" src="./js_lis/main.js"></script> -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/js_lis@1.0.17/main.js"></script>
+    <script src="login.js"></script>
+</body>
+
+</html>
