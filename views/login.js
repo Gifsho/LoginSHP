@@ -1,40 +1,33 @@
-function generateRandomKey() {
-  return CryptoJS.lib.WordArray.random(16); // สุ่มคีย์ 128 บิต
-}
-
-function encryptText(text, key, iv) {
-  const encrypted = CryptoJS.AES.encrypt(text, key, {
-    iv: iv,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  });
-
-  return encrypted.toString();
-}
-
 async function login(event) {
   event.preventDefault();
 
-  const Username = document.getElementById("u___n___").value;
-  const Password = document.getElementById("p___w___").value;
-
-  const encryptionKey = generateRandomKey();
-  const iv = CryptoJS.lib.WordArray.random(16);
-
-  const encryptedUsername = encryptText(Username, encryptionKey, iv);
-  const encryptedPassword = encryptText(Password, encryptionKey, iv);
+  const username = document.getElementById("u___n___").value;
+  const password = document.getElementById("p___w___").value;
 
   try {
+    // ขอ salt จาก server สำหรับการเข้ารหัสครั้งนี้
+    const saltResponse = await fetch("/getSalt");
+    const { salt } = await saltResponse.json();
+
+    // เข้ารหัสข้อมูลด้วย salt ที่ได้
+    const encryptedData = CryptoJS.AES.encrypt(
+      JSON.stringify({ username, password }),
+      salt,
+      {
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      }
+    ).toString();
+
+    console.log(encryptedData);
     const response = await fetch("/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: encryptedUsername,
-        password: encryptedPassword,
-        key: encryptionKey.toString(),
-        iv: iv.toString(),
+        data: encryptedData,
+        salt: salt
       }),
     });
 

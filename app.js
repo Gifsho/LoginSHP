@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const CryptoJS = require("crypto-js");
 const mongoose = require("mongoose");
+const crypto = require('crypto');
 
 const app = express();
 const port = 3000;
@@ -37,41 +38,62 @@ app.listen(port, () => {
 
 app.use(express.urlencoded({ extended: true }));
 
-function decryptText(encryptedText, key, iv) {
-  const bytes = CryptoJS.AES.decrypt(
-    encryptedText,
-    CryptoJS.enc.Hex.parse(key),
-    {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    }
-  );
+// เก็บ salt ชั่วคราว
+const activeSalts = new Map();
 
-  return bytes.toString(CryptoJS.enc.Utf8);
-}
+// สร้าง salt สำหรับแต่ละ request
+app.get('/getSalt', (req, res) => {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const timestamp = Date.now();
+  
+  // เก็บ salt พร้อม timestamp
+  activeSalts.set(salt, timestamp);
+  
+  // ลบ salt ที่เก่าเกิน 5 นาที
+  const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+  activeSalts.forEach((timestamp, salt) => {
+    if (timestamp < fiveMinutesAgo) {
+      activeSalts.delete(salt);
+    }
+  });
+  
+  res.json({ salt });
+});
 
 app.post("/login", async (req, res) => {
   try {
-    const { username, password, key, iv } = req.body;
+    const { data, salt } = req.body;
 
-    if (!username || !password || !key || !iv) {
-      throw new Error("Missing required fields");
+    // ตรวจสอบว่า salt ยังใช้งานได้
+    if (!activeSalts.has(salt)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid or expired salt" 
+      });
     }
 
-    const decryptedUsername = decryptText(username, key, iv);
-    const decryptedPassword = decryptText(password, key, iv);
+    // ถอดรหัสข้อมูล
+    const bytes = CryptoJS.AES.decrypt(data, salt);
+    const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    const { username, password } = decryptedData;
 
-    const user = await User.findOne({ username: decryptedUsername });
+    // ลบ salt ที่ใช้แล้ว
+    activeSalts.delete(salt);
 
-    if (user && user.password === decryptedPassword) {
-      res.json({ success: true, token: "fake-token" });
+    // ตรวจสอบ username และ password
+    const user = await User.findOne({ username });
+
+    if (user && user.password === password) {
+      res.json({ success: true, token: "fake-token"});
     } else {
       res.json({ success: false, message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal Server Error" 
+    });
   }
 });
 
