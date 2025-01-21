@@ -9,32 +9,39 @@ body {
 }
 
 .virtual-keyboard {
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    margin-top: 10px;
-    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px; 
+    margin: 0 auto;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .keyboard-row {
     display: flex;
-    justify-content: center;
-    margin: 5px 0;
+    justify-content: space-between; 
+    margin-bottom: 10px;
 }
 
 .keyboard-key {
-    margin: 2px;
+    flex: 1;
     padding: 10px 15px;
-    min-width: 30px;
+    margin: 2px;
+    font-size: 16px;
+    text-align: center;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    background: white;
+    border-radius: 5px;
+    background-color: #fff;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    min-width: 50px;
-    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.backspacew {
+    flex: 1.5; 
 }
 
 .keyboard-key:hover {
@@ -46,8 +53,10 @@ body {
     transform: translateY(1px);
 }
 
-.space .keyspace {
-    width: 100%;
+.keyboard-row {
+    display: flex;
+    justify-content: flex-start; /* จัดปุ่มปกติให้เริ่มจากซ้าย */
+    margin: 5px 0;
 }
 
 .controls {
@@ -81,7 +90,7 @@ input:focus, textarea:focus {
 #keyboard {
     position: absolute;  
     cursor: move;  
-    top: 50%; 
+    top: 80%; 
     left: 50%;  
     transform: translate(-50%, -50%);  
 }
@@ -133,3 +142,123 @@ input:focus, textarea:focus {
     line-height: 50px;
     margin: 8px;
 }
+
+.keyboard-row .active  {
+    background: #c7c7c7;
+}
+
+body.dark-mode .virtual-keyboard{
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(247, 245, 245, 0.1);
+}
+
+body.dark-mode {
+    background-color: #333;
+}
+
+body.dark-mode .login-container {
+    background-color: #000;
+    box-shadow: 0 4px 8px rgba(247, 245, 245, 0.1);
+    color: #fff;
+}
+
+body.dark-mode .login-container input {
+    background-color: #3333335d;
+    color: #fff;
+}
+
+body.dark-mode .login-container button {
+    background-color: #005703;
+    color: white;
+}
+
+.fa-keyboard {
+    color: #000;
+}
+
+body.dark-mode .keyb .fa-keyboard {
+    color: #ffffffde;
+}
+
+body.dark-mode .keyboard-key.key {
+    background-color: #222;
+    color: #ffffffde;
+}
+
+[data-key="Shift ⇧"] {
+    min-width: 90px;
+}
+
+[data-key="Caps 🄰"] {
+    min-width: 90px;
+}
+
+[data-key="Tab ↹"] {
+    min-width: 90px;
+}
+
+.keyboard-key.key[data-key="Shift ⇧"] {
+    color: #333;
+}
+
+
+.virtual-keyboard.full [data-key=Space] {
+    min-width: 980px;
+}
+
+.virtual-keyboard.full [data-key="Tab ↹"] {
+    min-width: 90px;
+}
+
+.virtual-keyboard.full [data-key=\\] {
+    min-width: 90px;
+}
+
+.virtual-keyboard.full [data-key="Caps 🄰"] {
+    min-width: 115px;
+}
+
+.virtual-keyboard.full [data-key=Enter] {
+    min-width: 143px;
+}
+
+.virtual-keyboard.full [data-key="Shift ⇧"] {
+    min-width: 130px;
+}
+
+.virtual-keyboard.full [data-key=↓] {
+    min-width: 70px;
+}
+
+.virtual-keyboard.full .concat-keys[data-key="0"] {
+    min-width: 160px;
+}
+
+.virtual-keyboard.full [data-key="←"] {
+    min-width: 100px;
+}
+
+.virtual-keyboard.full [data-key="↓"] {
+    min-width: 78.14px;
+}
+
+.virtual-keyboard.full [data-key="→"] {
+    min-width: 78.14px;
+}
+
+.virtual-keyboard.full {
+    min-width: 1500px
+}
+
+.virtual-keyboard.numpad {
+    max-width: 300px
+}
+
+.virtual-keyboard.Scnum {
+    max-width: 300px
+}
+
+.hidden {
+    display: none !important;
+}
+  
