@@ -55,7 +55,7 @@ body {
 
 .keyboard-row {
     display: flex;
-    justify-content: flex-start; /* จัดปุ่มปกติให้เริ่มจากซ้าย */
+    justify-content: flex-start;
     margin: 5px 0;
 }
 
@@ -185,14 +185,8 @@ body.dark-mode .keyboard-key.key {
     color: #ffffffde;
 }
 
-[data-key="Shift ⇧"] {
-    min-width: 90px;
-}
-
-[data-key="Caps 🄰"] {
-    min-width: 90px;
-}
-
+[data-key="Shift ⇧"],
+[data-key="Caps 🄰"],
 [data-key="Tab ↹"] {
     min-width: 90px;
 }
@@ -201,16 +195,14 @@ body.dark-mode .keyboard-key.key {
     color: #333;
 }
 
-
 .virtual-keyboard.full [data-key=Space] {
     min-width: 980px;
 }
 
-.virtual-keyboard.full [data-key="Tab ↹"] {
-    min-width: 90px;
-}
-
-.virtual-keyboard.full [data-key=\\] {
+.virtual-keyboard.full [data-key="Tab ↹"], 
+.virtual-keyboard.full [data-key=\\],
+[data-key="Caps 🄰"],
+[data-key="Enter"] {
     min-width: 90px;
 }
 
@@ -238,10 +230,7 @@ body.dark-mode .keyboard-key.key {
     min-width: 100px;
 }
 
-.virtual-keyboard.full [data-key="↓"] {
-    min-width: 78.14px;
-}
-
+.virtual-keyboard.full [data-key="↓"],
 .virtual-keyboard.full [data-key="→"] {
     min-width: 78.14px;
 }
@@ -250,10 +239,7 @@ body.dark-mode .keyboard-key.key {
     min-width: 1500px
 }
 
-.virtual-keyboard.numpad {
-    max-width: 300px
-}
-
+.virtual-keyboard.numpad,
 .virtual-keyboard.Scnum {
     max-width: 300px
 }
@@ -261,4 +247,16 @@ body.dark-mode .keyboard-key.key {
 .hidden {
     display: none !important;
 }
-  
+
+[data-key="Backspace"],
+[data-key="Tab ↹"] {
+    min-width: 80px;
+}
+
+[data-key="Shift ⇧"] {
+    min-width: 100px;
+}
+
+[data-key="Space"] {
+    min-width: 670px;
+}
