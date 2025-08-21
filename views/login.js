@@ -1,3 +1,59 @@
+(function () {
+  const SOSK_PAGE_SOURCE = 'SOSK_PAGE';
+  const SOSK_CONTENT_SOURCE = 'SOSK_CONTENT';
+
+  function generateRequestId() {
+    return `sosk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+
+  function soskRpc(action, payload = {}, options = {}) {
+    const { timeoutMs = 3000 } = options;
+    return new Promise((resolve, reject) => {
+      const requestId = generateRequestId();
+
+      function onMessage(evt) {
+        const data = evt && evt.data;
+        if (!data || data.source !== SOSK_CONTENT_SOURCE || data.requestId !== requestId) return;
+        window.removeEventListener('message', onMessage);
+        if (data.ok) resolve(data.result);
+        else reject(new Error(data.error || 'SOSK RPC error'));
+      }
+
+      window.addEventListener('message', onMessage);
+      window.postMessage({ source: SOSK_PAGE_SOURCE, action, requestId, ...payload }, '*');
+
+      if (timeoutMs > 0) {
+        setTimeout(() => {
+          window.removeEventListener('message', onMessage);
+          reject(new Error('SOSK RPC timeout'));
+        }, timeoutMs);
+      }
+    });
+  }
+
+  async function soskEncrypt(text, options) {
+    if (typeof text !== 'string') throw new TypeError('soskEncrypt: text must be a string');
+    return soskRpc('encrypt', { text }, options); // => { enc: { iv, data } }
+  }
+
+  async function soskDecrypt(payload, options) {
+    if (!payload || !payload.iv || !payload.data) throw new TypeError('soskDecrypt: payload must contain iv and data');
+    return soskRpc('decrypt', { payload }, options); // => { text }
+  }
+
+  window.sosk = {
+    rpc: soskRpc,
+    encrypt: soskEncrypt,
+    decrypt: soskDecrypt,
+  };
+
+  try {
+    if (typeof module !== 'undefined' && module.exports) {
+      module.exports = window.sosk;
+    }
+  } catch (_) {}
+})();
+
 async function login(event) {
     event.preventDefault();
   
