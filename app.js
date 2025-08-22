@@ -25,6 +25,24 @@ const User = mongoose.model("User", userSchema);
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  try {
+    const policy = [
+      "default-src 'self'",
+      "script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+      "font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+      "img-src 'self' data:",
+      "connect-src 'self'",
+      "frame-ancestors 'self'",
+    ].join('; ');
+    res.setHeader('Content-Security-Policy-Report-Only', policy);
+  } catch (e) {
+    console.warn('Failed to set CSP Report-Only header:', e);
+  }
+  next();
+});
+
 app.set('view engine', 'ejs'); 
 app.use(express.static('views'));
 
