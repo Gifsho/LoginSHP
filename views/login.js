@@ -102,7 +102,7 @@ async function login(event) {
     // Populate inputs with decrypted text for display (password remains masked by type="password")
     if (uEl && finalUsername) uEl.value = finalUsername;
     if (pEl && finalPassword && pEl.type !== "password") pEl.value = finalPassword;
-  
+
     try {
       // ขอ salt จาก server สำหรับการเข้ารหัสครั้งนี้
       const saltResponse = await fetch("/getSalt");
