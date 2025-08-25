@@ -57,33 +57,51 @@
 async function login(event) {
     event.preventDefault();
   
-    const username = document.getElementById("u___n___").value;
-    const password = document.getElementById("p___w___").value;
-  
-    // Read encrypted values from DOM if provided by VirtualKeyboard and decrypt
+    // Read input elements
     const uEl = document.getElementById("u___n___");
     const pEl = document.getElementById("p___w___");
-    let finalUsername = username;
-    let finalPassword = password;
+    
+    let finalUsername = "";
+    let finalPassword = "";
+    
+    // Try to get data from encrypted attribute first, then fallback to input.value
     try {
       if (window.VKCrypto && typeof window.VKCrypto.decrypt === "function") {
         const encUser = uEl && uEl.dataset ? uEl.dataset.encrypted : undefined;
         const encPass = pEl && pEl.dataset ? pEl.dataset.encrypted : undefined;
+        
+        // For username: use encrypted data if available, otherwise use input.value
         if (encUser) {
           const decUser = window.VKCrypto.decrypt(encUser);
-          if (decUser) finalUsername = decUser;
+          finalUsername = decUser || uEl.value;
+        } else {
+          finalUsername = uEl.value;
         }
+        
+        // For password: use encrypted data if available, otherwise use input.value
         if (encPass) {
           const decPass = window.VKCrypto.decrypt(encPass);
-          if (decPass) finalPassword = decPass;
+          finalPassword = decPass || pEl.value;
+        } else {
+          finalPassword = pEl.value;
         }
+      } else {
+        // No VKCrypto available, use input values directly
+        finalUsername = uEl.value;
+        finalPassword = pEl.value;
       }
     } catch (e) {
-      console.warn("Decryption failed:", e);
+      console.warn("Decryption failed, using input values:", e);
+      finalUsername = uEl.value;
+      finalPassword = pEl.value;
     }
-    // Populate inputs with decrypted text (password remains masked by type="password")
-    if (uEl) uEl.value = finalUsername;
-    if (pEl) pEl.value = finalPassword;
+    
+    // console.log("Login attempt with username:", finalUsername);
+    // console.log("Password length:", finalPassword.length);
+    
+    // Populate inputs with decrypted text for display (password remains masked by type="password")
+    if (uEl && finalUsername) uEl.value = finalUsername;
+    if (pEl && finalPassword && pEl.type !== "password") pEl.value = finalPassword;
   
     try {
       // ขอ salt จาก server สำหรับการเข้ารหัสครั้งนี้
@@ -100,7 +118,7 @@ async function login(event) {
         }
       ).toString();
   
-      console.log(encryptedData);
+      // console.log(encryptedData);
       const response = await fetch("/login", {
         method: "POST",
         headers: {
@@ -120,10 +138,12 @@ async function login(event) {
       const result = await response.json();
   
       if (result.success) {
+        console.log("login successful")
         alert("เข้าสู่ระบบสำเร็จ");
         localStorage.setItem("token", result.token);
         location.reload();
       } else {
+        console.log("login failed")
         alert(result.message);
         location.reload();
       }
